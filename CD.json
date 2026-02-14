@@ -1,0 +1,26 @@
+{
+  "master_key": "Admin@2025",
+  "villages": [
+    { "id": 38, "name": "গাড়াডোব", "pass": "1234", "f_file": "Garadob_F.xlsx" },
+    { "id": 39, "name": "আযান", "pass": "1234", "f_file": "Azan_F.xlsx" },
+    { "id": 40, "name": "যুগিন্দা", "pass": "1234", "f_file": "Juginda_F.xlsx" },
+    { "id": 41, "name": "বাহাগুন্দা", "pass": "1234", "f_file": "Bahagunda_F.xlsx" },
+    { "id": 42, "name": "ঢেপা", "pass": "1234", "f_file": "Dhepa_F.xlsx" },
+    { "id": 43, "name": "পাকুড়িয়া", "pass": "1234", "f_file": "Pakuria_F.xlsx" },
+    { "id": 44, "name": "চিৎলা", "pass": "1234", "f_file": "Chitla_F.xlsx" },
+    { "id": 45, "name": "নিত্যনন্দনপুর", "pass": "1234", "f_file": "Nityanandanpur_F.xlsx" },
+    { "id": 46, "name": "খরমপুর", "pass": "1234", "f_file": "Khorampur_F.xlsx" },
+    { "id": 47, "name": "কচুইখালি", "pass": "1234", "f_file": "Kochuikhali_F.xlsx" },
+    { "id": 48, "name": "ভাটপড়া", "pass": "1234", "f_file": "Bhatpara_F.xlsx" },
+    { "id": 49, "name": "দীঘলকান্দি", "pass": "1234", "f_file": "Dighalkandi_F.xlsx" },
+    { "id": 50, "name": "কসবা", "pass": "1234", "f_file": "Kasba_F.xlsx" },
+    { "id": 51, "name": "ধানখোলা", "pass": "1234", "f_file": "Dhankhola_F.xlsx" },
+    { "id": 52, "name": "দক্ষিণ তেতুলবাড়িয়া", "pass": "1234", "f_file": "Dakshin_Tetulbaria_F.xlsx" },
+    { "id": 53, "name": "মহিষাখোলা", "pass": "1234", "f_file": "Mahishakhola_F.xlsx" },
+    { "id": 54, "name": "আড়পাড়া", "pass": "1234", "f_file": "Arpara_F.xlsx" },
+    { "id": 55, "name": "জালশুকা", "pass": "1234", "f_file": "Jalshuka_F.xlsx" },
+    { "id": 56, "name": "চান্দামারী", "pass": "1234", "f_file": "Chandamari_F.xlsx" },
+    { "id": 57, "name": "বেড়", "pass": "1234", "f_file": "Ber_F.xlsx" },
+    { "id": 58, "name": "শানঘাট", "pass": "1234", "f_file": "Shanghat_F.xlsx" }
+  ]
+}
