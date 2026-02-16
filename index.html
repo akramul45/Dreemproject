@@ -124,6 +124,50 @@
     }
     .bismillah { font-size: 14px; color: #94a3b8; margin-bottom: 5px; letter-spacing: 1px; }
     .union-title { font-size: 22px; color: var(--highlight); font-weight: 700; margin-bottom: 25px; }
+    .voter-counter-badge {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.counter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #38bdf8;
+  padding: 8px 25px;
+  border-radius: 50px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+  transition: all 0.3s ease;
+}
+.counter-pill:hover {
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+  transform: translateY(-2px);
+}
+.count-label {
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.count-divider {
+  width: 1px;
+  height: 16px;
+  background: #475569;
+}
+.count-number {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+.count-total {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: normal;
+}
     
     .login-form input, .login-form select {
       width: 100%; padding: 12px; margin-bottom: 15px;
@@ -217,6 +261,14 @@
         <label><input type="radio" name="filter" value="sl" class="Rd"> ক্রমিক</label>
         <label><input type="radio" name="filter" value="name" class="Rd" checked> নাম</label>
         <label><input type="radio" name="filter" value="father" class="Rd"> পিতা/স্বামী</label>
+      </div>
+      
+      <div class="voter-counter-badge">
+  <div class="counter-pill">
+    <span class="count-label">মোট ভোটার</span>
+    <span class="count-divider"></span>
+    <span id="count-val" class="count-number">০</span>
+  </div>
       </div>
       
       <div class="search-wrapper">
@@ -478,6 +530,8 @@
       document.getElementById('upload-wrapper').style.display = 'none';
       document.getElementById('search-container').style.display = 'block';
       document.getElementById('table-container').style.display = 'block';
+      document.getElementById('count-val').innerHTML = toBn(excelData.length);
+      
     }
 
     /* ----- টেবিল রেন্ডারিং ও ডিটেইলস ----- */
@@ -605,6 +659,13 @@
       });
       
       renderTable(f);
+
+      if(v.length < 1) {
+  document.getElementById('count-val').innerHTML = toBn(excelData.length);
+} else {
+  document.getElementById('count-val').innerHTML = `${toBn(f.length)} <span class="count-total">/ ${toBn(excelData.length)}</span>`;
+      }
+      
       
       if(f.length > 0) {
         sg.style.display = 'block';
@@ -656,6 +717,11 @@
     document.querySelectorAll('input[name="filter"]').forEach(r => r.addEventListener('change', () => {
       clearSearch();
     }));
+
+    function toBn(n) {
+  return String(n).replace(/[0-9]/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+    }
+    
   </script>
 </body>
 </html>
