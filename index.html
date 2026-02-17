@@ -322,33 +322,199 @@
     </div>
   </footer>
 
-  <script>
+<script>
     /* ----- গ্লোবাল ভেরিয়েবলস ----- */
     let villageData = []; // CD.json এর ডেটা
-    let configData = {}; // মাস্টার কী রাখার জন্য
+    let configData = {}; // মাস্টার কনফিগারেশন
     let currentVillage = null;
     let currentGender = 'F'; // ডিফল্ট নারী
     let excelData = [];
+    
+    // কলাম হেডার ভেরিয়েবল (অটো ডিটেকশনের জন্য)
     let COL_SL="ক্রমিক", COL_NAME="নাম", COL_FATHER="পিতা", COL_MOTHER="মাতা", COL_VOTER="ভোটার নং";
 
-    // ---- শুরুতেই কনফিগারেশন লোড ----
+    /* =================================================================
+       নিরাপত্তা ও অথেনটিকেশন লেয়ার (Security & Authentication Layer)
+       ================================================================= */
+
+    // ১. পেজ লোড ও ইনিশিলাইজেশন
     window.addEventListener('load', async () => {
-      try {
-        const response = await fetch('CD.json');
-        if (!response.ok) throw new Error("Config missing");
-        configData = await response.json();
-        villageData = configData.villages;
-        populateVillageDropdown(villageData);
-      } catch (error) {
-        console.error("CD.json পাওয়া যায়নি, ফলব্যাক লিস্ট ব্যবহার করা হচ্ছে");
-        villageData = generateFallbackVillages();
-        populateVillageDropdown(villageData);
-        configData.master_key = "Admin@2025"; // ফলব্যাক মাস্টার কী
-      }
-      checkLoginStatus();
+        await fetchConfig(); // সার্ভার থেকে লেটেস্ট কনফিগ আনবে
+        checkLoginStatus();  // এরপর লগইন স্ট্যাটাস চেক করবে
     });
 
-    // ফলব্যাক ডেটা (যদি JSON ফাইল না থাকে)
+    // ২. সার্ভার থেকে কনফিগারেশন লোড (ক্যাশিং এড়াতে টাইমস্ট্যাম্প সহ)
+    async function fetchConfig() {
+        try {
+            const response = await fetch('CD.json?t=' + new Date().getTime());
+            if (!response.ok) throw new Error("Config missing");
+            configData = await response.json();
+            villageData = configData.villages;
+        } catch (error) {
+            console.error("CD.json লোড হয়নি, ফলব্যাক ডেটা ব্যবহার হচ্ছে");
+            villageData = generateFallbackVillages();
+            configData.master_key = "Admin@2025"; 
+        }
+        populateVillageDropdown(villageData);
+    }
+
+    // ৩. লগইন স্ট্যাটাস চেক (Strict Mode)
+    async function checkLoginStatus() {
+        const storedId = localStorage.getItem('voterApp_villageID');
+        const storedPass = localStorage.getItem('voterApp_pass'); 
+        
+        // ড্রপডাউনে আগে থেকেই গ্রাম সিলেক্ট করে রাখা (UX এর জন্য)
+        if(storedId) {
+            const sel = document.getElementById('village-select');
+            if(sel) sel.value = storedId;
+        }
+
+        if (storedId && storedPass) {
+            // মেমোরিতে থাকা তথ্যের সাথে লেটেস্ট জেসন ডেটা মিলানো
+            const village = villageData.find(v => v.id == storedId);
+            
+            // লজিক: গ্রাম থাকতে হবে এবং (গ্রামের পাসওয়ার্ড অথবা মাস্টার কী মিলতে হবে)
+            if(village && (village.pass === storedPass || storedPass === configData.master_key)) {
+                
+                // সফল ভেরিফিকেশন
+                currentVillage = village;
+                // জেন্ডার মেমোরি থেকে অথবা ডিফল্ট F
+                currentGender = localStorage.getItem('voterApp_gender') || 'F';
+                
+                // UI আপডেট
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('VillageName').innerText = village.name;
+                
+                updateGenderButtons();
+                loadVillageFile(); // সঠিক গ্রামের ডেটা লোড
+            } else {
+                // পাসওয়ার্ড পরিবর্তন হয়েছে বা গ্রাম মুছে গেছে -> লগআউট
+                console.warn("Security Alert: Password changed or Session invalid");
+                forceLogout(false); // false মানে ড্রপডাউন সিলেকশন রেখে দিবে
+            }
+        } else {
+            // কোনো লগইন তথ্য নেই
+            document.getElementById('login-overlay').style.display = 'flex';
+        }
+    }
+
+    // ৪. সেশন ভ্যালিডেশন হেল্পার (ব্যাকগ্রাউন্ড চেকার)
+    async function validateSession() {
+        // লেটেস্ট ডেটা আনুন
+        await fetchConfig();
+        
+        const storedId = localStorage.getItem('voterApp_villageID');
+        const storedPass = localStorage.getItem('voterApp_pass');
+        
+        if(!storedId || !storedPass) return false;
+
+        const village = villageData.find(v => v.id == storedId);
+        // রিয়েল-টাইম পাসওয়ার্ড চেকিং
+        return village && (village.pass === storedPass || storedPass === configData.master_key);
+    }
+
+    // ৫. লগইন প্রসেস
+    function attemptLogin() {
+        const selId = document.getElementById('village-select').value;
+        const pass = document.getElementById('login-pass').value;
+        const errorDiv = document.getElementById('login-error');
+
+        if (!selId) {
+            alert("দয়া করে একটি গ্রাম নির্বাচন করুন।");
+            return;
+        }
+
+        // লোকাল ডেটা থেকে চেক (যেহেতু পেজ লোডে fetchConfig হয়েছে)
+        const village = villageData.find(v => v.id == selId);
+        
+        if (village && (village.pass === pass || pass === configData.master_key)) {
+            // ক্রিডেনশিয়াল সেভ
+            localStorage.setItem('voterApp_villageID', village.id);
+            localStorage.setItem('voterApp_pass', pass);
+            localStorage.setItem('voterApp_gender', 'F'); // নতুন লগইনে ডিফল্ট নারী
+            
+            currentVillage = village;
+            currentGender = 'F';
+            
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('VillageName').innerText = village.name;
+            errorDiv.style.display = 'none';
+            
+            updateGenderButtons();
+            loadVillageFile();
+        } else {
+            errorDiv.style.display = 'block';
+        }
+    }
+
+    // ৬. জেন্ডার পরিবর্তন (রিয়েল-টাইম সিকিউরিটি চেক সহ)
+    async function switchGender(gender) {
+        if(currentGender === gender) return;
+        
+        // বাটন ক্লিকে ডেটা লোড হওয়ার আগেই চেক করবে পাসওয়ার্ড ঠিক আছে কিনা
+        document.getElementById('loading-indicator').style.display = 'block';
+        const isValid = await validateSession();
+
+        if (!isValid) {
+            alert("নিরাপত্তা জনিত কারণে বা পাসওয়ার্ড পরিবর্তনের ফলে সেশন শেষ হয়েছে। নতুন করে লগইন করুন।");
+            forceLogout(true); // true = সেশন ক্লিয়ার করে রিলোড
+            return;
+        }
+
+        // সব ঠিক থাকলে জেন্ডার চেঞ্জ হবে
+        currentGender = gender;
+        localStorage.setItem('voterApp_gender', gender);
+        
+        // UI রিসেট
+        document.getElementById('details-card').style.display = 'none';
+        document.getElementById('family-panel').style.display = 'none';
+        document.getElementById('search-box').value = '';
+        document.querySelector('.clear-search-btn').style.display = 'none';
+        
+        updateGenderButtons();
+        loadVillageFile();
+    }
+
+    // ৭. লগআউট / ফোর্স লগআউট
+    function forceLogout(fullReload = true) {
+        localStorage.removeItem('voterApp_pass'); // পাসওয়ার্ড মুছে ফেলবে
+        // গ্রাম আইডি মুছব না, যাতে লগইন বক্সে সিলেক্ট হয়ে থাকে (User Experience)
+        
+        if(fullReload) {
+            location.reload();
+        } else {
+            document.getElementById('login-overlay').style.display = 'flex';
+            document.getElementById('login-pass').value = ''; // ইনপুট ক্লিয়ার
+        }
+    }
+
+    function doLogout() {
+        if(confirm("আপনি কি লগআউট করতে চান?")) {
+            localStorage.removeItem('voterApp_villageID');
+            localStorage.removeItem('voterApp_pass');
+            localStorage.removeItem('voterApp_gender');
+            location.reload();
+        }
+    }
+
+    /* =================================================================
+       ফাইল লোডিং ও কোর লজিক (অপরিবর্তিত অংশ)
+       ================================================================= */
+
+    function populateVillageDropdown(data) {
+        const sel = document.getElementById('village-select');
+        // বর্তমান সিলেকশন ধরে রাখার চেষ্টা
+        const oldVal = sel.value;
+        sel.innerHTML = '<option value="">গ্রাম নির্বাচন করুন...</option>';
+        data.forEach(v => {
+            let opt = document.createElement('option');
+            opt.value = v.id;
+            opt.innerText = `${v.id}. ${v.name}`;
+            sel.appendChild(opt);
+        });
+        if(oldVal) sel.value = oldVal;
+    }
+
     function generateFallbackVillages() {
         return [
             {id:38, name:'গাড়াডোব', pass:'1234', f_file:'Garadob_F.xlsx'},
@@ -375,105 +541,6 @@
         ];
     }
 
-    function populateVillageDropdown(data) {
-      const sel = document.getElementById('village-select');
-      sel.innerHTML = '<option value="">গ্রাম নির্বাচন করুন...</option>';
-      data.forEach(v => {
-        let opt = document.createElement('option');
-        opt.value = v.id;
-        opt.innerText = `${v.id}. ${v.name}`;
-        sel.appendChild(opt);
-      });
-    }
-
-    /* ----- লগইন ও স্ট্যাটাস চেকিং ----- */
-   function checkLoginStatus() {
-  const storedId = localStorage.getItem('voterApp_villageID');
-  const storedPass = localStorage.getItem('voterApp_pass'); // সেভ করা পাসওয়ার্ড নিন
-  
-  if (storedId) {
-    currentVillage = villageData.find(v => v.id == storedId);
-    
-    // এখানে চেক করুন নতুন ডেটার পাসওয়ার্ডের সাথে স্টোর করা পাসওয়ার্ড মিলছে কিনা
-    if(currentVillage && currentVillage.pass === storedPass) {
-      document.getElementById('login-overlay').style.display = 'none';
-      // ... বাকি কোড
-    } else {
-      // যদি পাসওয়ার্ড না মিলে (অর্থাৎ আপনি JSON এ পাসওয়ার্ড বদলেছেন)
-      // তাহলে লোকাল স্টোরেজ ক্লিয়ার করে লগইন পেজ দেখান
-      localStorage.removeItem('voterApp_villageID');
-      localStorage.removeItem('voterApp_pass');
-      document.getElementById('login-overlay').style.display = 'flex';
-    }
-  } else {
-    document.getElementById('login-overlay').style.display = 'flex';
-  }
-}
-
-    
-function attemptLogin() {
-      const selId = document.getElementById('village-select').value;
-      const pass = document.getElementById('login-pass').value;
-      const errorDiv = document.getElementById('login-error');
-
-      if (!selId) {
-        alert("দয়া করে একটি গ্রাম নির্বাচন করুন।");
-        return;
-      }
-
-      const village = villageData.find(v => v.id == selId);
-      
-      // পাসওয়ার্ড যাচাই (গ্রামের পাসওয়ার্ড অথবা মাস্টার কী)
-      if (village && (village.pass === pass || pass === configData.master_key)) {
-        // সফল লগইন
-        // লগইন সফল হলে
-localStorage.setItem('voterApp_villageID', village.id);
-localStorage.setItem('voterApp_pass', pass); // পাসওয়ার্ডও সেভ করুন
-
-        
-        localStorage.setItem('voterApp_villageID', village.id);
-        localStorage.setItem('voterApp_gender', 'F'); // ডিফল্ট লগইন করলে নারীতে যাবে
-        
-        currentVillage = village;
-        currentGender = 'F';
-        
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('VillageName').innerText = village.name;
-        
-        // পাসওয়ার্ড সেভ করার জন্য ব্রাউজারের ডিফল্ট প্রম্পট ট্রিগার হতে পারে
-        errorDiv.style.display = 'none';
-        
-        updateGenderButtons();
-        loadVillageFile();
-      } else {
-        errorDiv.style.display = 'block';
-      }
-    }
-
-    function doLogout() {
-      if(confirm("আপনি কি লগআউট করতে চান?")) {
-        localStorage.removeItem('voterApp_villageID');
-        localStorage.removeItem('voterApp_gender');
-        location.reload();
-      }
-    }
-
-    /* ----- ফাইল লোডিং ও প্রসেসিং ----- */
-    function switchGender(gender) {
-        if(currentGender === gender) return; // ইতিমধ্যে এই জেন্ডারে থাকলে কিছু হবে না
-        currentGender = gender;
-        localStorage.setItem('voterApp_gender', gender);
-        
-        // UI রিসেট
-        document.getElementById('details-card').style.display = 'none';
-        document.getElementById('family-panel').style.display = 'none';
-        document.getElementById('search-box').value = '';
-        document.querySelector('.clear-search-btn').style.display = 'none';
-        
-        updateGenderButtons();
-        loadVillageFile();
-    }
-
     function updateGenderButtons() {
         const btnM = document.getElementById('btn-male');
         const btnF = document.getElementById('btn-female');
@@ -495,8 +562,8 @@ localStorage.setItem('voterApp_pass', pass); // পাসওয়ার্ড�
         document.getElementById('search-container').style.display = 'none';
         document.getElementById('upload-wrapper').style.display = 'none';
 
-        // ফাইলের নাম জেনারেট করা
-        // উদাহরণ: f_file যদি "Garadob_F.xlsx" হয়, তাহলে বেস নাম "Garadob"
+        // ডায়নামিক ফাইল নেম জেনারেশন
+        // উদাহরণ: Arpara_F.xlsx -> Arpara + _ + M + .xlsx
         let baseName = currentVillage.f_file.replace('_F.xlsx', '').replace('_F.xls', '');
         let fileName = `${baseName}_${currentGender}.xlsx`;
 
@@ -509,246 +576,232 @@ localStorage.setItem('voterApp_pass', pass); // পাসওয়ার্ড�
             console.error(err);
             document.getElementById('loading-indicator').style.display = 'none';
             document.getElementById('upload-wrapper').style.display = 'block';
-            // আপলোড লেবেলে মেসেজ দেওয়া যেতে পারে যে অটোমেটিক ফাইল পাওয়া যায়নি
         });
     }
 
     // ম্যানুয়াল আপলোড হ্যান্ডলার
     document.getElementById('excel-file').addEventListener('change', e => {
-      if(e.target.files[0]) {
-        let r = new FileReader();
-        r.onload = ev => processData(ev.target.result);
-        r.readAsArrayBuffer(e.target.files[0]);
-      }
+        if(e.target.files[0]) {
+            let r = new FileReader();
+            r.onload = ev => processData(ev.target.result);
+            r.readAsArrayBuffer(e.target.files[0]);
+        }
     });
 
     function processData(buf) {
-      try {
-        let wb = XLSX.read(new Uint8Array(buf), {type:'array'});
-        let ws = wb.Sheets[wb.SheetNames[0]];
-        excelData = XLSX.utils.sheet_to_json(ws, {defval:""});
-        if(excelData.length > 0) {
-          detectHeaders(excelData[0]);
-          uiReady();
-          renderTable(excelData);
-        } else {
-          alert("ডেটা নেই");
+        try {
+            let wb = XLSX.read(new Uint8Array(buf), {type:'array'});
+            let ws = wb.Sheets[wb.SheetNames[0]];
+            excelData = XLSX.utils.sheet_to_json(ws, {defval:""});
+            if(excelData.length > 0) {
+                detectHeaders(excelData[0]);
+                uiReady();
+                renderTable(excelData);
+            } else {
+                alert("ডেটা নেই");
+            }
+        } catch(e) {
+            console.log(e);
+            alert("ফাইল রিড করতে সমস্যা হয়েছে।");
         }
-      } catch(e) {
-        console.log(e);
-        alert("ফাইল রিড করতে সমস্যা হয়েছে।");
-      }
     }
 
     function detectHeaders(r) {
-      // হেডার অটো ডিটেক্ট
-      Object.keys(r).forEach(h => {
-        let t = h.trim();
-        if(t.includes("ক্রমিক") || t.toLowerCase()==="sl" || t.toLowerCase()==="no") COL_SL=h;
-        if(t.includes("নাম") && !t.includes("পিতা") && !t.includes("স্বামী")) COL_NAME=h;
-        if(t.includes("পিতা") || t.includes("স্বামী")) COL_FATHER=h;
-        if(t.includes("মাতা")) COL_MOTHER=h;
-        if((t.includes("ভোটার") || t.includes("ID") || t.includes("নং")) && !t.includes("ক্রমিক")) COL_VOTER=h;
-      });
+        Object.keys(r).forEach(h => {
+            let t = h.trim();
+            if(t.includes("ক্রমিক") || t.toLowerCase()==="sl" || t.toLowerCase()==="no") COL_SL=h;
+            if(t.includes("নাম") && !t.includes("পিতা") && !t.includes("স্বামী")) COL_NAME=h;
+            if(t.includes("পিতা") || t.includes("স্বামী")) COL_FATHER=h;
+            if(t.includes("মাতা")) COL_MOTHER=h;
+            if((t.includes("ভোটার") || t.includes("ID") || t.includes("নং")) && !t.includes("ক্রমিক")) COL_VOTER=h;
+        });
     }
 
     function uiReady() {
-      document.getElementById('loading-indicator').style.display = 'none';
-      document.getElementById('upload-wrapper').style.display = 'none';
-      document.getElementById('search-container').style.display = 'block';
-      document.getElementById('table-container').style.display = 'block';
-      document.getElementById('count-val').innerHTML = toBn(excelData.length);
-      
+        document.getElementById('loading-indicator').style.display = 'none';
+        document.getElementById('upload-wrapper').style.display = 'none';
+        document.getElementById('search-container').style.display = 'block';
+        document.getElementById('table-container').style.display = 'block';
+        document.getElementById('count-val').innerHTML = toBn(excelData.length);
     }
 
-    /* ----- টেবিল রেন্ডারিং ও ডিটেইলস ----- */
+    /* ----- টেবিল রেন্ডারিং ও ডিটেইলস (অপরিবর্তিত) ----- */
     function renderTable(d) {
-      let th = document.querySelector('#data-table thead');
-      let tb = document.querySelector('#data-table tbody');
-      th.innerHTML = ''; tb.innerHTML = '';
-      
-      if(d.length === 0) return;
-      
-      let ks = Object.keys(d[0]); // সব কলাম দেখানো হবে
-      let hr = '<tr>';
-      ks.forEach(k => hr += `<th>${k}</th>`);
-      th.innerHTML = hr + '</tr>';
-      
-      // প্রথম ১০০টি রেজাল্ট দেখাবে পারফরম্যান্সের জন্য
-      d.slice(0, 100).forEach(r => {
-        let idx = excelData.indexOf(r);
-        let tr = `<tr onclick="selPer(${idx})">`;
-        ks.forEach(k => tr += `<td>${r[k]}</td>`);
-        tb.insertAdjacentHTML('beforeend', tr + '</tr>');
-      });
+        let th = document.querySelector('#data-table thead');
+        let tb = document.querySelector('#data-table tbody');
+        th.innerHTML = ''; tb.innerHTML = '';
+        
+        if(d.length === 0) return;
+        
+        let ks = Object.keys(d[0]); 
+        let hr = '<tr>';
+        ks.forEach(k => hr += `<th>${k}</th>`);
+        th.innerHTML = hr + '</tr>';
+        
+        d.slice(0, 100).forEach(r => {
+            let idx = excelData.indexOf(r);
+            let tr = `<tr onclick="selPer(${idx})">`;
+            ks.forEach(k => tr += `<td>${r[k]}</td>`);
+            tb.insertAdjacentHTML('beforeend', tr + '</tr>');
+        });
     }
 
     window.selPer = function(i) {
-      let p = excelData[i];
-      showDet(p);
-      document.getElementById('suggestions-box').style.display = 'none';
-      
-      // সার্চ বক্সে নাম সেট করা এবং ক্রস বাটন দেখানো
-      const sb = document.getElementById('search-box');
-      sb.value = p[COL_NAME];
-      document.querySelector('.clear-search-btn').style.display = 'block';
+        let p = excelData[i];
+        showDet(p);
+        document.getElementById('suggestions-box').style.display = 'none';
+        
+        const sb = document.getElementById('search-box');
+        sb.value = p[COL_NAME];
+        document.querySelector('.clear-search-btn').style.display = 'block';
     }
 
     function showDet(p) {
-      let c = document.getElementById('details-card');
-      let v = String(p[COL_VOTER] || "000");
-      document.getElementById('family-panel').style.display = 'none';
-      
-      c.innerHTML = `
-        <div class="sl-circle">${p[COL_SL] || '-'}</div>
-        <div class="info-label">নাম</div>
-        <div style="font-size:22px;color:#fff;font-weight:bold;margin-bottom:15px">${p[COL_NAME]}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;text-align:center">
-          <div>
-            <div class="info-label">পিতা/স্বামী</div>
-            <div class="info-value clickable-link" onclick="showFam('${p[COL_FATHER]}', 'father')">${p[COL_FATHER]}</div>
-          </div>
-          <div>
-            <div class="info-label">মাতা</div>
-            <div class="info-value clickable-link" onclick="showFam('${p[COL_MOTHER]}', 'mother')">${p[COL_MOTHER]}</div>
-          </div>
-        </div>
-        <div class="voter-box">
-          <span style="color:#94a3b8;font-size:14px;letter-spacing:1px">NID NO</span>
-          <span style="font-size:20px;color:#cbd5e1">${v.slice(0,-3)}</span>
-          <span class="voter-main">${v.slice(-3)}</span>
-        </div>
-      `;
-      c.style.display = 'block';
-      window.scrollTo({top: 0, behavior: 'smooth'});
+        let c = document.getElementById('details-card');
+        let v = String(p[COL_VOTER] || "000");
+        document.getElementById('family-panel').style.display = 'none';
+        
+        c.innerHTML = `
+            <div class="sl-circle">${p[COL_SL] || '-'}</div>
+            <div class="info-label">নাম</div>
+            <div style="font-size:22px;color:#fff;font-weight:bold;margin-bottom:15px">${p[COL_NAME]}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;text-align:center">
+                <div>
+                    <div class="info-label">পিতা/স্বামী</div>
+                    <div class="info-value clickable-link" onclick="showFam('${p[COL_FATHER]}', 'father')">${p[COL_FATHER]}</div>
+                </div>
+                <div>
+                    <div class="info-label">মাতা</div>
+                    <div class="info-value clickable-link" onclick="showFam('${p[COL_MOTHER]}', 'mother')">${p[COL_MOTHER]}</div>
+                </div>
+            </div>
+            <div class="voter-box">
+                <span style="color:#94a3b8;font-size:14px;letter-spacing:1px">NID NO</span>
+                <span style="font-size:20px;color:#cbd5e1">${v.slice(0,-3)}</span>
+                <span class="voter-main">${v.slice(-3)}</span>
+            </div>
+        `;
+        c.style.display = 'block';
+        window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
-    // পিতা বা মাতার নামে পরিবার খোঁজা (Generic Function)
     window.showFam = function(val, type) {
-      if(!val || val.length < 2) return;
-      
-      let colToSearch = (type === 'father') ? COL_FATHER : COL_MOTHER;
-      let relationName = (type === 'father') ? "পিতা/স্বামী" : "মাতা";
+        if(!val || val.length < 2) return;
+        
+        let colToSearch = (type === 'father') ? COL_FATHER : COL_MOTHER;
+        let relationName = (type === 'father') ? "পিতা/স্বামী" : "মাতা";
 
-      let sibs = excelData.filter(i => String(i[colToSearch]).trim() === val.trim());
-      
-      if(sibs.length === 0) return;
-      
-      renderTable(sibs); // টেবিলে ফিল্টার রেজাল্ট দেখাবে
-      
-      let p = document.getElementById('family-panel');
-      let h = '';
-      sibs.forEach(s => {
-        h += `<div class="member-card" onclick="selPer(${excelData.indexOf(s)})">
-          <div style="font-size:14px;color:#e2e8f0;margin-bottom:5px;font-weight:bold">${s[COL_NAME]}</div>
-          <div style="color:#fbbf24;font-size:12px;font-weight:bold;border-top:1px solid #334155;padding-top:5px">ক্রমিক: ${s[COL_SL]||'-'}</div>
-        </div>`;
-      });
-      
-      p.innerHTML = `
-        <button class="close-btn" onclick="this.parentElement.style.display='none'">×</button>
-        <div style="text-align:center;color:#94a3b8;font-size:13px;margin-bottom:10px;">
-             ${relationName}: ${val} এর পরিবার (${sibs.length} জন)
-        </div>
-        <div style="display:flex;overflow-x:auto;gap:12px;padding:5px">${h}</div>
-      `;
-      p.style.display = 'block';
+        let sibs = excelData.filter(i => String(i[colToSearch]).trim() === val.trim());
+        
+        if(sibs.length === 0) return;
+        
+        renderTable(sibs); 
+        
+        let p = document.getElementById('family-panel');
+        let h = '';
+        sibs.forEach(s => {
+            h += `<div class="member-card" onclick="selPer(${excelData.indexOf(s)})">
+                <div style="font-size:14px;color:#e2e8f0;margin-bottom:5px;font-weight:bold">${s[COL_NAME]}</div>
+                <div style="color:#fbbf24;font-size:12px;font-weight:bold;border-top:1px solid #334155;padding-top:5px">ক্রমিক: ${s[COL_SL]||'-'}</div>
+            </div>`;
+        });
+        
+        p.innerHTML = `
+            <button class="close-btn" onclick="this.parentElement.style.display='none'">×</button>
+            <div style="text-align:center;color:#94a3b8;font-size:13px;margin-bottom:10px;">
+                 ${relationName}: ${val} এর পরিবার (${sibs.length} জন)
+            </div>
+            <div style="display:flex;overflow-x:auto;gap:12px;padding:5px">${h}</div>
+        `;
+        p.style.display = 'block';
     }
 
-    /* ----- সার্চ ফাংশনালিটি ----- */
+    /* ----- সার্চ ফাংশনালিটি (অপরিবর্তিত) ----- */
     let sb = document.getElementById('search-box');
     let sg = document.getElementById('suggestions-box');
     let clrBtn = document.querySelector('.clear-search-btn');
     
     sb.addEventListener('keyup', e => {
-      let v = e.target.value.toLowerCase();
-      
-      // ক্রস বাটন কন্ট্রোল
-      clrBtn.style.display = v.length > 0 ? 'block' : 'none';
+        let v = e.target.value.toLowerCase();
+        clrBtn.style.display = v.length > 0 ? 'block' : 'none';
 
-      let filter = document.querySelector('input[name="filter"]:checked').value;
-      
-      document.getElementById('details-card').style.display = 'none';
-      document.getElementById('family-panel').style.display = 'none';
-      sg.innerHTML = '';
-      
-      if(v.length < 1) {
-        renderTable(excelData);
-        sg.style.display = 'none';
-        return;
-      }
-      
-      let f = excelData.filter(i => {
-        if(filter === 'sl') return String(i[COL_SL] || "").toLowerCase().includes(v);
-        if(filter === 'name') return String(i[COL_NAME] || "").toLowerCase().includes(v);
-        if(filter === 'father') return String(i[COL_FATHER] || "").toLowerCase().includes(v);
-        return false;
-      });
-      
-      renderTable(f);
-
-      if(v.length < 1) {
-  document.getElementById('count-val').innerHTML = toBn(excelData.length);
-} else {
-  document.getElementById('count-val').innerHTML = `${toBn(f.length)} <span class="count-total">/ ${toBn(excelData.length)}</span>`;
-      }
-      
-      
-      if(f.length > 0) {
-        sg.style.display = 'block';
-        f.slice(0, 8).forEach(i => {
-          let d = document.createElement('div');
-          d.className = 'suggestion-item';
-          d.innerHTML = `<div><span style="color:#fbbf24;font-weight:bold;margin-right:8px">${i[COL_SL]||'-'}</span><span style="color:#e2e8f0;font-weight:600">${i[COL_NAME]}</span></div><div style="font-size:11px;color:#94a3b8">${i[COL_FATHER]}</div>`;
-          d.onclick = () => selPer(excelData.indexOf(i));
-          sg.appendChild(d);
+        let filter = document.querySelector('input[name="filter"]:checked').value;
+        
+        document.getElementById('details-card').style.display = 'none';
+        document.getElementById('family-panel').style.display = 'none';
+        sg.innerHTML = '';
+        
+        if(v.length < 1) {
+            renderTable(excelData);
+            sg.style.display = 'none';
+            return;
+        }
+        
+        let f = excelData.filter(i => {
+            if(filter === 'sl') return String(i[COL_SL] || "").toLowerCase().includes(v);
+            if(filter === 'name') return String(i[COL_NAME] || "").toLowerCase().includes(v);
+            if(filter === 'father') return String(i[COL_FATHER] || "").toLowerCase().includes(v);
+            return false;
         });
-      } else {
-        sg.style.display = 'none';
-      }
+        
+        renderTable(f);
+
+        if(v.length < 1) {
+            document.getElementById('count-val').innerHTML = toBn(excelData.length);
+        } else {
+            document.getElementById('count-val').innerHTML = `${toBn(f.length)} <span class="count-total">/ ${toBn(excelData.length)}</span>`;
+        }
+        
+        if(f.length > 0) {
+            sg.style.display = 'block';
+            f.slice(0, 8).forEach(i => {
+                let d = document.createElement('div');
+                d.className = 'suggestion-item';
+                d.innerHTML = `<div><span style="color:#fbbf24;font-weight:bold;margin-right:8px">${i[COL_SL]||'-'}</span><span style="color:#e2e8f0;font-weight:600">${i[COL_NAME]}</span></div><div style="font-size:11px;color:#94a3b8">${i[COL_FATHER]}</div>`;
+                d.onclick = () => selPer(excelData.indexOf(i));
+                sg.appendChild(d);
+            });
+        } else {
+            sg.style.display = 'none';
+        }
     });
 
-    // সার্চ ক্লিয়ার ফাংশন
     window.clearSearch = function() {
         sb.value = '';
         clrBtn.style.display = 'none';
         sg.style.display = 'none';
         document.getElementById('details-card').style.display = 'none';
         document.getElementById('family-panel').style.display = 'none';
-        renderTable(excelData); // মেইন ডেটা আবার লোড হবে
+        renderTable(excelData); 
     }
 
-    // মেনু টগল
     function toggleMenu() {
-      const menu = document.getElementById('sideMenu');
-      const overlay = document.querySelector('.nav-overlay');
-      const btn = document.querySelector('.menu-btn');
-      
-      if (menu.classList.contains('active')) {
-        menu.classList.remove('active');
-        overlay.classList.remove('active');
-        btn.classList.remove('active');
-      } else {
-        menu.classList.add('active');
-        overlay.classList.add('active');
-        btn.classList.add('active');
-      }
+        const menu = document.getElementById('sideMenu');
+        const overlay = document.querySelector('.nav-overlay');
+        const btn = document.querySelector('.menu-btn');
+        
+        if (menu.classList.contains('active')) {
+            menu.classList.remove('active');
+            overlay.classList.remove('active');
+            btn.classList.remove('active');
+        } else {
+            menu.classList.add('active');
+            overlay.classList.add('active');
+            btn.classList.add('active');
+        }
     }
     
-    // বাইরে ক্লিক করলে সাজেশন বন্ধ
     document.addEventListener('click', e => {
-      if(e.target !== sb && e.target !== sg && e.target !== clrBtn) sg.style.display = 'none';
+        if(e.target !== sb && e.target !== sg && e.target !== clrBtn) sg.style.display = 'none';
     });
     
-    // ফিল্টার রেডিও বাটন চেঞ্জ হলে
     document.querySelectorAll('input[name="filter"]').forEach(r => r.addEventListener('change', () => {
-      clearSearch();
+        clearSearch();
     }));
 
     function toBn(n) {
-  return String(n).replace(/[0-9]/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+        return String(n).replace(/[0-9]/g, d => "০১২৩৪৫৬৭৮৯"[d]);
     }
-    
-  </script>
+</script>
 </body>
 </html>
