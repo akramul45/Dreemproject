@@ -64,12 +64,17 @@
     .filter-group label { cursor: pointer; color: #cbd5e1; font-size: 15px; display: flex; align-items: center; gap: 8px; accent-color: var(--highlight); }
     
     /* Search Box & Clear Button */
-    .search-wrapper { position: relative; margin-bottom: 20px; }
-    #search-box { width: 100%; padding: 14px 45px 14px 24px; background: #020617; border: 1px solid #475569; color: #fff; border-radius: 50px; font-size: 16px; transition: 0.3s; outline: none; }
-    #search-box:focus { border-color: var(--highlight); box-shadow: 0 0 0 4px rgba(56,189,248,0.15); }
-    .clear-search-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 20px; cursor: pointer; display: none; transition: 0.2s; width: 24px; height: 24px; text-align: center; line-height: 24px; border-radius: 50%; }
-    .clear-search-btn:hover { color: #ef4444; background: rgba(255,255,255,0.1); }
-    
+    /* Search & Counter Compact Style */
+.search-wrapper { display: flex; align-items: center; gap: 10px; position: relative; margin-bottom: 20px; }
+
+#search-box { flex: 1; padding: 14px 45px 14px 24px; background: #020617; border: 1px solid #475569; color: #fff; border-radius: 50px; font-size: 16px; outline: none; transition: 0.3s; }
+#search-box:focus { border-color: var(--highlight); box-shadow: 0 0 0 4px rgba(56,189,248,0.15); }
+
+.clear-search-btn { position: absolute; right: 120px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; line-height: 24px; text-align: center; cursor: pointer; color: #94a3b8; border-radius: 50%; display: none; z-index: 10; transition: 0.2s; }
+.clear-search-btn:hover { color: #ef4444; background: rgba(255,255,255,0.1); }
+
+.side-counter { background: rgba(30, 41, 59, 0.8); border: 1px solid var(--highlight); padding: 12px 16px; border-radius: 50px; color: #fff; font-weight: bold; white-space: nowrap; min-width: 80px; text-align: center; font-family: 'Courier New', monospace; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
+
     #suggestions-box { position: absolute; top: 115%; left: 0; right: 0; background: var(--card-bg); border: 1px solid #475569; border-radius: 12px; max-height: 300px; overflow-y: auto; z-index: 500; display: none; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
     .suggestion-item { padding: 14px 20px; border-bottom: 1px solid #334155; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
     .suggestion-item:hover { background: #334155; }
@@ -256,29 +261,41 @@
       <input type="file" id="excel-file" accept=".xlsx,.xls"/>
     </div>
     
+        <div id="search-container" style="display:none">
+      <div class="filter-group">
+        <label><input type="radio" name="filter" value="sl" class="Rd"> ক্রমিক</label>
+        <label><input type="radio" name="filter" value="name" class="Rd" checked> নাম</label>
+        <label><input type="radio" name="filter" value="father" class="Rd"> পিতা/স্বামী</label>
+      </div>
+      
+      <div class="search-wrapper">
+        <input type="text" id="search-box" placeholder="নাম বা তথ্য দিয়ে খুঁজুন..." autocomplete="off"/>
+        
+        <span class="clear-search-btn" onclick="clearSearch()">×</span>
+        
+        <div class="side-counter">
+           <span id="count-val">০</span>
+        </div>
+
+        <div id="suggestions-box"></div>
+      </div>
+    </div>
     <div id="search-container" style="display:none">
       <div class="filter-group">
         <label><input type="radio" name="filter" value="sl" class="Rd"> ক্রমিক</label>
         <label><input type="radio" name="filter" value="name" class="Rd" checked> নাম</label>
         <label><input type="radio" name="filter" value="father" class="Rd"> পিতা/স্বামী</label>
-     <section class="voter-counter-badge">
-  <div class="counter-pill">
-    <span class="count-label">মোট ভোটার</span>
-    <span class="count-divider"></span>
-    <span id="count-val" class="count-number">০</span>
-  </div>
-     </section>
-        
       </div>
-      
-      
       
       <div class="search-wrapper">
         <input type="text" id="search-box" placeholder="নাম বা তথ্য দিয়ে খুঁজুন..." autocomplete="off"/>
-       <span class="count-divider"></span>
-        <span id="count-val" class="count-number">০</span>
- 
+        
         <span class="clear-search-btn" onclick="clearSearch()">×</span>
+        
+        <div class="side-counter">
+           <span id="count-val">০</span>
+        </div>
+
         <div id="suggestions-box"></div>
       </div>
     </div>
