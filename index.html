@@ -633,7 +633,10 @@
         
         if(d.length === 0) return;
         
-        let ks = Object.keys(d[0]); 
+ // let ks = Object.keys(d[0]); 
+      // শুধুমাত্র নির্দিষ্ট ৫টি কলাম দেখানোর জন্য
+let ks = [COL_SL, COL_NAME, COL_FATHER, COL_MOTHER, COL_VOTER];
+      
         let hr = '<tr>';
         ks.forEach(k => hr += `<th>${k}</th>`);
         th.innerHTML = hr + '</tr>';
@@ -773,6 +776,7 @@
         document.getElementById('details-card').style.display = 'none';
         document.getElementById('family-panel').style.display = 'none';
         renderTable(excelData); 
+      document.getElementById('count-val').innerHTML = toBn(0);
     }
 
     function toggleMenu() {
