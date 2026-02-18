@@ -27,8 +27,32 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
 
-    .header-container { max-width: 1200px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+  /*  .header-container { max-width: 1200px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
     .brand-area { display: flex; flex-direction: column; justify-content: center; }
+    */    .header-container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      height: 100%; 
+      display: flex; 
+      align-items: center; 
+      padding: 0 20px;
+      /* নতুন পরিবর্তন */
+      justify-content: flex-end;
+      position: relative;
+    }
+
+    .brand-area { 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center;
+      /* নতুন পরিবর্তন */
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+    }
+    
     .brand-title { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
     .brand-sub { font-size: 10px; color: var(--highlight); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-top: 2px; }
 
