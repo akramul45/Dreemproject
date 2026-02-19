@@ -29,17 +29,15 @@
 
   /*  .header-container { max-width: 1200px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
     .brand-area { display: flex; flex-direction: column; justify-content: center; }
-    */    .header-container { 
-      max-width: 1200px; 
-      margin: 0 auto; 
-      height: 100%; 
-      display: flex; 
-      align-items: center; 
-      padding: 0 20px;
-      /* নতুন পরিবর্তন */
-      justify-content: flex-end;
-      position: relative;
+    */       header {
+      position: sticky; top: 0; z-index: 1000; width: 100%; height: var(--header-h);
+      background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      /* কালারফুল 3D বর্ডার এবং প্রফেশনাল শ্যাডো */
+      border-bottom: 3px solid transparent;
+      border-image: linear-gradient(90deg, #10b981, #38bdf8, #8b5cf6, #f43f5e, #f59e0b) 1;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(56, 189, 248, 0.15);
     }
+
 
     .brand-area { 
       display: flex; 
@@ -235,6 +233,8 @@
 
   <header>
     <div class="header-container">
+        <div class="logo-area">
+        <img src="Logo.png" alt="Logo" class="site-logo"> </div>
       <div class="brand-area">
         <span class="brand-title" id="VillageName">গ্রাম নির্বাচন করা হয়নি</span>
         <span class="brand-sub">ভোটার তালিকা সিস্টেম</span>
