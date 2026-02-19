@@ -29,65 +29,46 @@
 
   /*  .header-container { max-width: 1200px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
     .brand-area { display: flex; flex-direction: column; justify-content: center; }
-    */       header {
-  position: sticky; 
-  top: 0; 
-  z-index: 1000; 
-  width: 100%; 
-  height: var(--header-h);
-  background: var(--glass); 
-  backdrop-filter: blur(12px); 
-  -webkit-backdrop-filter: blur(12px);
-  /* কালারফুল 3D বর্ডার এবং প্রফেশনাল শ্যাডো */
-  border-bottom: 3px solid transparent;
-  border-image: linear-gradient(9deg, #900, green, #f59e0b) 1;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(56, 189, 248, 0.15);
-  
-  /* নতুন যোগ করা লেআউট প্রপার্টি */
-  display: flex;
-  justify-content: space-between; /* দুই পাশের উপাদানকে দুই প্রান্তে ঠেলে দেবে */
-  align-items: center; /* লম্বালম্বিভাবে সব এক লাইনে রাখবে */
-  padding: 0 20px; /* ডানে ও বামে কিছুটা ফাঁকা জায়গা তৈরি করার জন্য */
-  }
-.llogo-area {
-  margin-right: auto;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  z-index: 20;
-}
+    */    /* গ্লোবাল ভেরিয়েবল (ডার্ক থিম) */
+:root { --primary-color: #38bdf8; --text-main: #f8fafc; --text-muted: #94a3b8; --glass-bg: rgba(15, 23, 42, 0.7); }
 
-.site-logo {
-  height: 50px;
-  width: 60px;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
-  transition: transform 0.3s ease;
-}
+body { margin: 0; font-family: 'Hind Siliguri', 'Arial', sans-serif; background-color: #0b1120; color: var(--text-main); }
 
-.site-logo:hover {
-  transform: scale(1.05);
-}
-    
+/* ৩ডি + গ্লাস + ডেপথ হেডার স্টাইল এবং কালারফুল বর্ডার */
+.glass-header { position: sticky; top: 0; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border-bottom: 3px solid transparent; border-image: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%) 1; box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.05); }
 
-    .bprand-area { 
-      display: flex; 
-      flex-direction: column; 
-      justify-content: center;
-      /* নতুন পরিবর্তন */
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-      z-index: 10;
-    }
-    
-    .brand-title { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 2.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-    .brand-sub { font-size: 10px; color: var(--highlight); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-top: 2px; }
+/* নিখুঁত Center Align এর জন্য CSS Grid */
+.header-container { max-width: 1280px; margin: 0 auto; padding: 10px 20px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px; }
 
-    .nav-actions { display: flex; align-items: center; gap: 15px; }
-    .quick-link { cursor: pointer; text-decoration: none; font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 50px; transition: all 0.3s ease; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; display: flex; align-items: center; gap: 6px; user-select: none; }
-    .quick-link:hover { background: rgba(56, 189, 248, 0.15); color: var(--highlight); border-color: var(--highlight); transform: translateY(-1px); }
-    .quick-link.active-gender { background: var(--highlight); color: #0f172a; font-weight: bold; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+/* লোগো (বাম দিক) */
+.logo-area { display: flex; justify-content: flex-start; }
+
+.site-logo { height: 48px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+
+/* ব্র্যান্ড টাইটেল (ঠিক মাঝখানে) */
+.brand-area { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+
+.brand-title { font-size: 1.4rem; font-weight: 800; color: var(--primary-color); text-shadow: 1px 2px 3px rgba(0,0,0,0.6); line-height: 1.2; margin: 0; }
+
+.brand-sub { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; margin: 0; }
+
+/* বাটন ও মেনু (ডান দিক) */
+.nav-actions { display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
+
+/* ৩ডি নিওমরফিজম (Neumorphism) বাটন - ডার্ক থিম */
+.quick-link { display: flex; align-items: center; gap: 6px; padding: 8px 18px; background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.8)); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; font-size: 0.95rem; font-weight: 700; color: var(--text-main); cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), -4px -4px 10px rgba(255, 255, 255, 0.05), inset 1px 1px 2px rgba(255,255,255,0.1); }
+
+.quick-link:hover { transform: translateY(-2px); box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.5), -6px -6px 15px rgba(255, 255, 255, 0.08), inset 1px 1px 2px rgba(255,255,255,0.15); }
+
+.quick-link:active { transform: translateY(1px); box-shadow: inset 3px 3px 6px rgba(0,0,0,0.6), inset -3px -3px 6px rgba(255,255,255,0.05); }
+
+/* থ্রিডি হ্যামবার্গার মেনু - ডার্ক থিম */
+.menu-btn { display: flex; flex-direction: column; justify-content: space-between; width: 30px; height: 22px; cursor: pointer; }
+
+.menu-btn .line { display: block; height: 3px; width: 100%; background: linear-gradient(90deg, #38bdf8, #818cf8); border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.5); transition: all 0.3s ease; }
+
+/* মোবাইল রেসপন্সিভনেস */
+@media (max-width: 768px) { .header-container { grid-template-columns: auto 1fr auto; gap: 10px; padding: 10px 15px; } .brand-title { font-size: 1.1rem; } .brand-sub { font-size: 0.75rem; } .quick-link span { display: none; } .quick-link { padding: 8px 12px; } }
 
     .menu-btn { cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; gap: 5px; width: 40px; height: 40px; padding: 5px; border-radius: 8px; transition: 0.3s; }
     .menu-btn:hover { background: rgba(255,255,255,0.05); }
