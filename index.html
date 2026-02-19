@@ -15,6 +15,10 @@
       --accent: #f59e0b;
       --header-h: 70px;
       --glass: rgba(15, 23, 42, 0.85);
+      --primary-color: #38bdf8; 
+      --text-muted: #94a3b8; 
+      --glass-bg: rgba(15, 23, 42, 0.7); 
+      
     }
 
     * { box-sizing: border-box; outline: 0; margin: 0; padding: 0; }
@@ -30,15 +34,11 @@
   /*  .header-container { max-width: 1200px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
     .brand-area { display: flex; flex-direction: column; justify-content: center; }
     */    /* গ্লোবাল ভেরিয়েবল (ডার্ক থিম) */
-:root { --primary-color: #38bdf8; --text-main: #f8fafc; --text-muted: #94a3b8; --glass-bg: rgba(15, 23, 42, 0.7); }
 
-body { margin: 0; font-family: 'Hind Siliguri', 'Arial', sans-serif; background-color: #0b1120; color: var(--text-main); }
-
-/* ৩ডি + গ্লাস + ডেপথ হেডার স্টাইল এবং কালারফুল বর্ডার */
-.glass-header { position: sticky; top: 0; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border-bottom: 3px solid transparent; border-image: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%) 1; box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.05); }
+ .glass-header { position: sticky; top: 0; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border-bottom: 3px solid transparent; border-image: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%) 1; box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.05); }
 
 /* নিখুঁত Center Align এর জন্য CSS Grid */
-.header-container { max-width: 1280px; margin: 0 auto; padding: 10px 20px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px; }
+.header-container { max-width: 1280px; margin: 0 auto; padding: 10px 20px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 5px; }
 
 /* লোগো (বাম দিক) */
 .logo-area { display: flex; justify-content: flex-start; }
@@ -63,12 +63,8 @@ body { margin: 0; font-family: 'Hind Siliguri', 'Arial', sans-serif; background-
 .quick-link:active { transform: translateY(1px); box-shadow: inset 3px 3px 6px rgba(0,0,0,0.6), inset -3px -3px 6px rgba(255,255,255,0.05); }
 
 /* থ্রিডি হ্যামবার্গার মেনু - ডার্ক থিম */
-.menu-btn { display: flex; flex-direction: column; justify-content: space-between; width: 30px; height: 22px; cursor: pointer; }
-
-.menu-btn .line { display: block; height: 3px; width: 100%; background: linear-gradient(90deg, #38bdf8, #818cf8); border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.5); transition: all 0.3s ease; }
-
+ 
 /* মোবাইল রেসপন্সিভনেস */
-@media (max-width: 768px) { .header-container { grid-template-columns: auto 1fr auto; gap: 10px; padding: 10px 15px; } .brand-title { font-size: 1.1rem; } .brand-sub { font-size: 0.75rem; } .quick-link span { display: none; } .quick-link { padding: 8px 12px; } }
 
     .menu-btn { cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; gap: 5px; width: 40px; height: 40px; padding: 5px; border-radius: 8px; transition: 0.3s; }
     .menu-btn:hover { background: rgba(255,255,255,0.05); }
@@ -221,6 +217,8 @@ body { margin: 0; font-family: 'Hind Siliguri', 'Arial', sans-serif; background-
     }
     .login-btn:hover { background: #0ea5e9; }
     .error-msg { color: #ef4444; font-size: 13px; margin-top: 10px; display: none; }
+ @media (max-width: 768px) { .header-container { grid-template-columns: auto 1fr auto; gap: 1px; padding: 1px 1px; } .brand-title { font-size: 0.5rem; } .brand-sub { font-size: 0.15rem; } .quick-link span { display: none; } .quick-link { padding: 8px 4px; } }
+    
   </style>
 </head>
 <body>
