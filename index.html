@@ -245,7 +245,7 @@
         <section class="logo-area"> <img src="Logo.png" alt="Logo" class="site-logo"> </section>
       <section class="brand-area">
         <span class="brand-title" id="VillageName">গ্রাম নির্বাচন করা হয়নি</span>
-        <span class="brand-sub">ভোটার তালিকা সিস্টেম</span>
+        <span class="brand-sub" id="brand-sub-text">নারী ভোটার তালিকা</span>
       </section>
       
       <section class="nav-actions">
@@ -351,7 +351,7 @@
         Developed by <span class="dev-name">মোঃ আকরামুল হক</span>
       </div>
       <div class="copyright">
-        © 2025 Offline Voter Data System | All Rights Reserved.
+        © 2025 জালশুকা যুব জামায়াতে ইসলামী | All Rights Reserved.
       </div>
     </div>
   </footer>
@@ -578,13 +578,19 @@
     function updateGenderButtons() {
         const btnM = document.getElementById('btn-male');
         const btnF = document.getElementById('btn-female');
-        
+        const subTitle = document.getElementById('brand-sub-text');
+
+      
         if(currentGender === 'M') {
             btnM.classList.add('active-gender');
             btnF.classList.remove('active-gender');
+          if(subTitle) subTitle.innerText = "পুরুষ ভোটার তালিকা";
+          
         } else {
             btnF.classList.add('active-gender');
             btnM.classList.remove('active-gender');
+          if(subTitle) subTitle.innerText = "নারী ভোটার তালিকা";
+          
         }
     }
 
