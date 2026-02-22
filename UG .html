@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ব্যবহার বিধি - ভোটার তালিকা সেবা</title>
+  <style>
+    @font-face { font-family: 'Kalpurush'; src: url('kalpurush.ttf'); }
+    :root {
+      --bg-dark: #000000;
+      --card-bg: #1e293b;
+      --text-main: #e2e8f0;
+      --highlight: #38bdf8;
+      --accent: #f59e0b;
+      --header-h: 70px;
+      --glass: rgba(15, 23, 42, 0.85);
+      --primary-color: #38bdf8; 
+      --text-muted: #94a3b8; 
+      --glass-bg: rgba(15, 23, 42, 0.7); 
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; outline: 0; margin: 0; padding: 0; }
+    body { font-family: 'Kalpurush', sans-serif; background: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+
+    /* ---- হেডার স্টাইল (আগের পেজের মত হুবহু) ---- */
+    header { position: sticky; top: 0; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border-bottom: 3px dotted transparent; border-image: linear-gradient(90deg, #900 0%, gold 100%) 1; box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.05); }
+    .header-container { max-width: 1280px; margin: 0 auto; padding: 10px 2px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 5px; }
+    .logo-area { display: flex; justify-content: flex-start; }
+    .site-logo { height: 48px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+    .brand-area { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+    .brand-title { font-size: 2.2rem; font-weight: 800; color: var(--primary-color); text-shadow: 1px 2px 3px rgba(0,0,0,0.6); line-height: 1.2; margin: 0; }
+    .brand-sub { font-size: 1.2rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; margin: 0; }
+    .nav-actions { display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
+    
+    .quick-link { display: flex; align-items: center; gap: 6px; padding: 8px 18px; background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.8)); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; font-size: 0.95rem; font-weight: 700; color: var(--text-main); cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), -4px -4px 10px rgba(255, 255, 255, 0.05), inset 1px 1px 2px rgba(255,255,255,0.1); text-decoration: none;}
+    .quick-link:hover { transform: translateY(-2px); box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.5), -6px -6px 15px rgba(255, 255, 255, 0.08), inset 1px 1px 2px rgba(255,255,255,0.15); }
+
+    /* ---- ইউজার গাইড কন্টেইনার ---- */
+    .container { width: 96%; max-width: 850px; margin: 40px auto; flex: 1; }
+    
+    .bismillah { text-align: center; font-size: 18px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; }
+    
+    .intro-box { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--highlight); padding: 25px; border-radius: 16px; text-align: center; margin-bottom: 40px; box-shadow: 0 0 20px rgba(56, 189, 248, 0.1); position: relative; overflow: hidden; }
+    .intro-box::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--highlight), var(--accent), var(--success)); }
+    .intro-title { font-size: 24px; color: var(--accent); font-weight: bold; margin-bottom: 15px; }
+    .intro-text { font-size: 17px; color: #cbd5e1; line-height: 1.6; }
+    
+    /* ---- স্টেপ কার্ড (ভবিষ্যৎধর্মী ডিজাইন) ---- */
+    .step-card { background: var(--card-bg); border-radius: 16px; border: 1px solid #334155; padding: 25px; margin-bottom: 25px; display: flex; gap: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); transition: 0.3s; position: relative; }
+    .step-card:hover { border-color: var(--highlight); transform: translateY(-3px); box-shadow: 0 15px 25px rgba(0,0,0,0.4); }
+    
+    .step-icon { flex-shrink: 0; width: 60px; height: 60px; background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(245,158,11,0.1)); border: 1px solid rgba(56,189,248,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: inset 0 0 10px rgba(56,189,248,0.2); }
+    
+    .step-content h3 { color: #fff; font-size: 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+    .step-content p { color: #94a3b8; font-size: 16px; line-height: 1.6; }
+    
+    .color-hint { padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 14px; }
+    .hint-blue { background: rgba(56,189,248,0.15); color: var(--highlight); border: 1px solid rgba(56,189,248,0.3); }
+    .hint-orange { background: rgba(245,158,11,0.15); color: var(--accent); border: 1px solid rgba(245,158,11,0.3); }
+    .hint-green { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+    
+    .ul-list { margin-top: 10px; list-style-type: none; padding-left: 5px; }
+    .ul-list li { position: relative; padding-left: 25px; margin-bottom: 8px; color: #cbd5e1; font-size: 15.5px; }
+    .ul-list li::before { content: '👉'; position: absolute; left: 0; top: 1px; font-size: 14px; }
+
+    /* ---- ফুটার ---- */
+    footer { background: #0b1120; padding: 30px 20px; margin-top: auto; border-top: 1px solid #1e293b; text-align: center; }
+    .footer-content { max-width: 600px; margin: 0 auto; }
+    .dev-badge { display: inline-block; background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; padding: 8px 20px; border-radius: 50px; font-size: 13px; color: #94a3b8; margin-bottom: 10px; }
+    .dev-name { color: var(--highlight); font-weight: 600; }
+    .copyright { font-size: 11px; color: #64748b; letter-spacing: 0.5px; }
+
+    @media (max-width: 768px) {
+      .header-container { grid-template-columns: auto 1fr auto; padding: 10px 15px; }
+      .brand-title { font-size: 1.5rem; }
+      .brand-sub { font-size: 0.9rem; }
+      .quick-link span { display: none; }
+      .step-card { flex-direction: column; gap: 15px; align-items: center; text-align: center; }
+      .ul-list li { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <section class="logo-area">
+        <img src="Logo.png" alt="Logo" class="site-logo" onerror="this.style.display='none'">
+      </section>
+      
+      <section class="brand-area">
+        <span class="brand-title">ইউজার গাইড</span>
+        <span class="brand-sub">সহজে ব্যবহারের নিয়মাবলী</span>
+      </section>
+      
+      <section class="nav-actions">
+        <a href="index.html" class="quick-link" title="হোম পেজ">
+          🏠 <span>হোম পেজে ফিরুন</span>
+        </a>
+      </section>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+    
+    <div class="intro-box">
+      <h2 class="intro-title">জনসেবাই আমাদের লক্ষ্য</h2>
+      <p class="intro-text">
+        ধানখোলা ইউনিয়নের সম্মানিত নাগরিকদের সুবিধার্থে 
+        <strong style="color: var(--highlight);">যুব জামায়াতে ইসলামী</strong>-এর পক্ষ থেকে এই 
+        ডিজিটাল ভোটার তালিকা সিস্টেমটি তৈরি করা হয়েছে। 
+        যাতে করে খুব সহজেই স্মার্টফোন বা কম্পিউটার থেকে যে কেউ ভোটার তথ্য খুঁজে বের করতে পারেন। 
+        নিচে এটি ব্যবহারের সহজ নিয়মাবলী ধাপে ধাপে আলোচনা করা হলো।
+      </p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">🔐</div>
+      <div class="step-content">
+        <h3>ধাপ ১: সিস্টেমে প্রবেশ (লগইন)</h3>
+        <p>ওয়েবসাইটে ঢোকার পর প্রথমেই আপনাকে একটি লগইন পেজ দেখানো হবে।</p>
+        <ul class="ul-list">
+          <li>প্রথমে <span class="color-hint hint-blue">গ্রাম নির্বাচন করুন</span> অপশন থেকে আপনার নির্দিষ্ট গ্রামটি সিলেক্ট করুন।</li>
+          <li>এরপর নিচে নির্ধারিত <span class="color-hint hint-orange">পাসওয়ার্ড</span> দিয়ে লগইন বাটনে ক্লিক করুন।</li>
+          <li>সফলভাবে লগইন হলে আপনার গ্রামের নাম উপরে বড় করে লেখা দেখতে পাবেন।</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">👥</div>
+      <div class="step-content">
+        <h3>ধাপ ২: নারী বা পুরুষ ভোটার নির্বাচন</h3>
+        <p>লগইন করার পর অটোমেটিকভাবে নারী ভোটারদের তালিকা চলে আসবে।</p>
+        <ul class="ul-list">
+          <li>পুরুষদের তালিকা দেখতে চাইলে উপরের ডানদিকে থাকা <span class="color-hint hint-blue">👨 পুরুষ</span> বাটনে ক্লিক করুন।</li>
+          <li>আবার নারীদের তালিকায় ফিরে যেতে <span class="color-hint hint-orange">👩 নারী</span> বাটনে ক্লিক করুন।</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">🔍</div>
+      <div class="step-content">
+        <h3>ধাপ ৩: ভোটার খোঁজা (Search)</h3>
+        <p>হাজার হাজার নামের মধ্যে নির্দিষ্ট কাউকে খুঁজে বের করা খুব সহজ।</p>
+        <ul class="ul-list">
+          <li>সার্চ বক্সের উপরে তিনটি গোল অপশন (রেডিও বাটন) আছে: <strong>ক্রমিক, নাম, পিতা/স্বামী</strong>।</li>
+          <li>আপনি যা দিয়ে খুঁজতে চান সেটি সিলেক্ট করুন। (যেমন: নাম দিয়ে খুঁজতে <span class="color-hint hint-green">নাম</span> সিলেক্ট করুন)।</li>
+          <li>এরপর সার্চ বক্সে বাংলায় নাম বা তথ্য লিখলেই নিচে মিলে যাওয়া ভোটারদের তালিকা চলে আসবে।</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">📋</div>
+      <div class="step-content">
+        <h3>ধাপ ৪: বিস্তারিত তথ্য ও পরিবারের সদস্য</h3>
+        <p>যেকোনো ভোটারের সম্পূর্ণ তথ্য এবং এনআইডি (NID) নম্বর দেখতে পারবেন।</p>
+        <ul class="ul-list">
+          <li>টেবিল থেকে যেকোনো নামের উপর ক্লিক করুন, উপরে একটি কার্ডে তার বিস্তারিত দেখাবে।</li>
+          <li>পিতা/স্বামী অথবা মাতার নামের রঙ যদি <span class="color-hint hint-blue">নীল কালার</span> হয়, তবে সেখানে ক্লিক করতে পারবেন।</li>
+          <li>ক্লিক করলে ওই পরিবারের বাকি ভোটারদের (যাদের পিতা/মাতার নাম একই) তালিকা একসাথে দেখা যাবে।</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">📂</div>
+      <div class="step-content">
+        <h3>ধাপ ৫: ম্যানুয়াল আপলোড (জরুরী প্রয়োজনে)</h3>
+        <p>যদি কখনো সার্ভার বা ইন্টারনেটের কারণে স্বয়ংক্রিয়ভাবে ডেটা লোড না হয়, তবে ভয় পাওয়ার কিছু নেই।</p>
+        <ul class="ul-list">
+          <li>স্ক্রিনে <span class="color-hint hint-orange">📁 ফাইল সিলেক্ট করুন</span> নামের একটি ড্যাশড (Dashed) বর্ডার দেওয়া বক্স দেখতে পাবেন।</li>
+          <li>সেখানে ক্লিক করে আপনার মোবাইলে সেভ করা গ্রামের এক্সেল (Excel) ফাইলটি সিলেক্ট করে দিলেই কাজ শুরু হয়ে যাবে।</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  
+  <footer>
+    <div class="footer-content">
+      <div class="dev-badge">
+        Developed by <span class="dev-name">মোঃ আকরামুল হক</span>
+      </div>
+      <div class="copyright">
+        © 2025 Offline Voter Data System | Youth Jamaat-e-Islami, Dhankhola Union. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

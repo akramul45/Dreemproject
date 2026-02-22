@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>আমাদের সম্পর্কে - ভোটার তালিকা সেবা</title>
+  <style>
+    @font-face { font-family: 'Kalpurush'; src: url('kalpurush.ttf'); }
+    :root {
+      --bg-dark: #0f172a; /* Slightly lighter dark for modern feel */
+      --card-bg: #1e293b;
+      --text-main: #e2e8f0;
+      --highlight: #10b981; 
+      --accent: #fbbf24; 
+      --header-h: 70px;
+      --primary-color: #10b981; 
+      --text-muted: #94a3b8; 
+      --glass-bg: rgba(15, 23, 42, 0.85); 
+    }
+
+    * { box-sizing: border-box; outline: 0; margin: 0; padding: 0; }
+    body { font-family: 'Kalpurush', sans-serif; background: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+
+    /* ---- Header Styles ---- */
+    header { position: sticky; top: 0; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(12px); border-bottom: 2px solid rgba(16, 185, 129, 0.2); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5); }
+    .header-container { max-width: 1200px; margin: 0 auto; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .logo-area { display: flex; align-items: center; gap: 15px; }
+    .site-logo { height: 45px; width: auto; }
+    .brand-area { display: flex; flex-direction: column; }
+    .brand-title { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); line-height: 1.1; }
+    .brand-sub { font-size: 1rem; color: var(--text-muted); font-weight: 500; }
+    
+    .quick-link { display: flex; align-items: center; gap: 8px; padding: 8px 20px; background: rgba(30,41,59,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; font-size: 0.95rem; font-weight: 600; color: var(--text-main); cursor: pointer; transition: all 0.3s ease; text-decoration: none; }
+    .quick-link:hover { background: rgba(16, 185, 129, 0.1); color: var(--highlight); border-color: var(--highlight); transform: translateY(-2px); }
+
+    /* ---- Main Container ---- */
+    .container { width: 92%; max-width: 1000px; margin: 50px auto; flex: 1; }
+    
+    .bismillah { text-align: center; font-size: 1.2rem; color: var(--accent); margin-bottom: 20px; font-weight: 600; letter-spacing: 1px; }
+    
+    /* Intro Section */
+    .intro-box { background: rgba(30, 41, 59, 0.4); border-left: 4px solid var(--highlight); padding: 35px 30px; border-radius: 12px; margin-bottom: 60px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .intro-title { font-size: 1.8rem; color: var(--highlight); margin-bottom: 15px; font-weight: 700; }
+    .intro-text { font-size: 1.1rem; color: #cbd5e1; line-height: 1.8; text-align: justify; }
+    
+    .section-title { text-align: center; font-size: 1.8rem; color: #fff; margin-bottom: 40px; position: relative; padding-bottom: 15px; }
+    .section-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: var(--accent); border-radius: 2px; }
+    
+    /* Profile Cards */
+    .profile-card { background: var(--card-bg); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 30px; margin-bottom: 30px; display: flex; align-items: center; gap: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: transform 0.3s ease, border-color 0.3s ease; }
+    .profile-card:hover { border-color: rgba(16, 185, 129, 0.3); transform: translateY(-5px); }
+    
+    .profile-img-box { flex-shrink: 0; width: 130px; height: 130px; border-radius: 50%; padding: 4px; background: linear-gradient(135deg, var(--highlight), var(--accent)); }
+    .profile-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: var(--bg-dark); border: 4px solid var(--card-bg); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--text-muted); }
+    
+    .profile-content { flex: 1; }
+    .profile-role { display: inline-block; padding: 6px 14px; background: rgba(16, 185, 129, 0.1); color: var(--highlight); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; }
+    .profile-name { font-size: 1.6rem; color: #fff; font-weight: 700; margin-bottom: 8px; }
+    .profile-title { font-size: 1rem; color: var(--accent); margin-bottom: 15px; font-weight: 500; line-height: 1.5; }
+    .profile-desc { font-size: 1rem; color: #94a3b8; line-height: 1.7; }
+
+    /* Developer Special Card */
+    .dev-special-card { border: 1px solid rgba(251, 191, 36, 0.2); background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%); align-items: flex-start; }
+    .dev-special-card .profile-role { background: rgba(251, 191, 36, 0.1); color: var(--accent); border-color: rgba(251, 191, 36, 0.2); }
+    
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 25px; }
+    .info-item { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05); padding: 18px; border-radius: 10px; display: flex; gap: 15px; align-items: flex-start; transition: background 0.3s ease; }
+    .info-item:hover { background: rgba(251, 191, 36, 0.05); border-color: rgba(251, 191, 36, 0.2); }
+    
+    .info-icon { font-size: 1.5rem; flex-shrink: 0; width: 45px; height: 45px; background: rgba(15, 23, 42, 0.8); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(251, 191, 36, 0.2); color: var(--accent); }
+    .info-text h4 { color: #e2e8f0; font-size: 1rem; margin-bottom: 6px; font-weight: 600; }
+    .info-text p { color: #94a3b8; font-size: 0.95rem; line-height: 1.6; }
+
+    .contact-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 10px 24px; background: var(--highlight); color: #000; border-radius: 6px; text-decoration: none; font-size: 0.95rem; font-weight: 700; transition: all 0.3s ease; }
+    .contact-btn:hover { background: #0ea5e9; color: #fff; transform: translateY(-2px); }
+
+    /* ---- Footer ---- */
+    footer { background: #0b1120; padding: 30px 20px; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
+    .dev-badge { display: inline-block; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; color: #94a3b8; margin-bottom: 12px; }
+    .dev-name { color: var(--highlight); font-weight: 600; }
+    .copyright { font-size: 0.85rem; color: #64748b; }
+
+    /* ---- Mobile Responsive ---- */
+    @media (max-width: 768px) {
+      .header-container { flex-direction: column; gap: 15px; text-align: center; }
+      .logo-area { flex-direction: column; }
+      .brand-title { font-size: 1.5rem; }
+      
+      .profile-card { flex-direction: column; text-align: center; padding: 25px 20px; gap: 20px; }
+      .profile-img-box { width: 110px; height: 110px; }
+      
+      .info-grid { grid-template-columns: 1fr; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo-area">
+        <img src="Logo.png" alt="Logo" class="site-logo" onerror="this.style.display='none'">
+        <div class="brand-area">
+          <span class="brand-title">আমাদের সম্পর্কে</span>
+          <span class="brand-sub">নেপথ্যের কারিগর</span>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a href="index.html" class="quick-link" title="হোম পেজ">
+          🏠 <span>হোম পেজ</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+    
+    <div class="intro-box">
+      <h2 class="intro-title">মানবতার কল্যাণে প্রযুক্তি</h2>
+      <p class="intro-text">
+        বাংলাদেশ জামায়াতে ইসলামী-এর অন্যতম মূলনীতি হলো সমাজসেবা ও মানবতার কল্যাণ সাধন। দ্বীনি দায়িত্বের পাশাপাশি সাধারণ মানুষের নাগরিক সেবাগুলো সহজলভ্য করার লক্ষ্যে, ধানখোলা ইউনিয়নের মানুষের সুবিধার্থে <strong>'যুব জামায়াতে ইসলামী'</strong>-এর উদ্যোগে এই ডিজিটাল অফলাইন ভোটার তালিকা ওয়েবসাইটটি তৈরি করা হয়েছে। আধুনিক তথ্যপ্রযুক্তি ব্যবহার করে একটি সমৃদ্ধ ও স্মার্ট সমাজ গঠনে এটি আমাদের একটি ক্ষুদ্র কিন্তু যুগান্তকারী পদক্ষেপ।
+      </p>
+    </div>
+
+    <h2 class="section-title">প্রজেক্ট বাস্তবায়নে যারা</h2>
+
+    <div class="profile-card">
+      <div class="profile-img-box">
+        <img src="mamun.jpg" alt="মামুন" class="profile-img" onerror="this.outerHTML='<div class=\\'profile-img\\'>👤</div>'">
+      </div>
+      <div class="profile-content">
+        <span class="profile-role">উদ্যোক্তা ও নির্দেশক</span>
+        <h3 class="profile-name">মোঃ মামুন</h3>
+        <div class="profile-title">
+          সেক্রেটারি, ধানখোলা যুব জামায়াতে ইসলামী <br> 
+          <span style="color:#e2e8f0;">বিশিষ্ট ব্যবসায়ী (আরএফএল)</span>
+        </div>
+        <p class="profile-desc">
+          এই প্রজেক্টের মূল রূপকার। একজন সফল ব্যবসায়ী হওয়ার পাশাপাশি দ্বীনি কাজ ও সমাজসেবায় তিনি সর্বদা নিজেকে নিয়োজিত রেখেছেন। প্রযুক্তির মাধ্যমে সাধারণ মানুষের দোরগোড়ায় সেবা পৌঁছে দেওয়ার এই রূপরেখা প্রণয়নে তিনি অগ্রণী ভূমিকা পালন করেছেন।
+        </p>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-img-box">
+        <img src="hasibul.jpg" alt="হাসিবুল ইসলাম" class="profile-img" onerror="this.outerHTML='<div class=\\'profile-img\\'>🎓</div>'">
+      </div>
+      <div class="profile-content">
+        <span class="profile-role">সার্বিক তত্ত্বাবধান</span>
+        <h3 class="profile-name">মোঃ হাসিবুল ইসলাম</h3>
+        <div class="profile-title">
+          উপ-পরিচালক, ধানখোলা জামায়াতে ইসলামী <br> 
+          <span style="color:#e2e8f0;">বিসিএস পরীক্ষার্থী (বাংলাদেশ ইসলামী ছাত্রশিবির)</span>
+        </div>
+        <p class="profile-desc">
+          বাংলাদেশ ইসলামী ছাত্রশিবিরের একজন নিবেদিতপ্রাণ কর্মী ও মেধাবী ছাত্র। মেধা ও নৈতিকতার সমন্বয়ে তরুণ সমাজকে এগিয়ে নেওয়ার পাশাপাশি এই সেবামূলক প্রকল্পে তিনি তথ্য সংগ্রহ এবং মূল্যবান পরামর্শ দিয়ে নিরলসভাবে যুক্ত আছেন।
+        </p>
+      </div>
+    </div>
+
+    <div class="profile-card dev-special-card">
+      <div class="profile-img-box">
+        <img src="akramul.jpg" alt="আকরামুল হক" class="profile-img" onerror="this.outerHTML='<div class=\\'profile-img\\'>💻</div>'">
+      </div>
+      <div class="profile-content">
+        <span class="profile-role">সিস্টেম আর্কিটেক্ট ও ডেভেলপার</span>
+        <h3 class="profile-name">মোঃ আকরামুল হক</h3>
+        <div class="profile-title">
+          এমবিএ (ব্যবস্থাপনা)
+        </div>
+        <p class="profile-desc">
+          একজন প্রযুক্তিপ্রেমী ও সিস্টেম আর্কিটেক্ট, যিনি জ্ঞান ও প্রযুক্তিকে আল্লাহর আমানত বলে বিশ্বাস করেন। অফলাইন ডেটাবেস, রেস্পন্সিভ কোডিং এবং আধুনিক ওয়েব প্রযুক্তিতে দক্ষ হয়ে তিনি অত্যন্ত সততা ও জবাবদিহিতার সাথে পুরো সিস্টেমের আর্কিটেকচার একাই সম্পন্ন করেছেন। 
+        </p>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-icon">⚙️</div>
+            <div class="info-text">
+              <h4>কারিগরি দক্ষতা</h4>
+              <p>ওয়েবসাইট ডেভেলপমেন্ট, অফলাইন ডেটাবেস, ফাস্ট সার্চ অ্যালগরিদম এবং ইউজার-ফ্রেন্ডলি ডিজাইন প্রণয়নে বাস্তব অভিজ্ঞতা।</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">🚀</div>
+            <div class="info-text">
+              <h4>প্রজেক্টে ভূমিকা</h4>
+              <p>হাজারো ডেটা দ্রুত খোঁজার জন্য অপ্টিমাইজড অ্যালগরিদম তৈরি এবং সম্পূর্ণ সিস্টেমের আর্কিটেকচার ও কোডিং সম্পন্ন করা।</p>
+            </div>
+          </div>
+        </div> 
+
+        <a href="mailto:your.email@gmail.com" class="contact-btn">✉️ ডেভেলপারকে ইমেইল করুন</a>
+      </div>
+    </div>
+
+  </div>
+  
+  <footer>
+    <div class="dev-badge">
+      Developed by <span class="dev-name">মোঃ আকরামুল হক</span>
+    </div>
+    <div class="copyright">
+      © 2026 Offline Voter Data System | Youth Jamaat-e-Islami, Dhankhola Union. All Rights Reserved.
+    </div>
+  </footer>
+
+</body>
+</html>
