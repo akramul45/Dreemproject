@@ -35,10 +35,10 @@
     .brand-area { display: flex; flex-direction: column; justify-content: center; }
     */    /* গ্লোবাল ভেরিয়েবল (ডার্ক থিম) */
 
- header { position: sticky; top: 0; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border-bottom: 3px dotted transparent; border-image: linear-gradient(90deg, #900 0%, gold 100%) 1; box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.05); }
+ header { min-height: 180px; position: sticky; top: 0; z-index: 1000; background: var(--glass-bg); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border-bottom: 3px dotted transparent; border-image: linear-gradient(90deg, #900 0%, gold 100%) 1; box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.05); }
 
 /* উচ্চতা বাড়াতে চাইলে padding: 20px 2px; দিন, কমাতে চাইলে 5px 2px; দিন */
-.header-container { max-width: 1280px; min-height: 180px; margin: 0 auto; padding: 1px 1px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 5px; }
+.header-container { max-width: 1280px; min-height: 180px; margin: 0 auto; padding: 10px 2px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 5px; }
 
 
 /* লোগো (বাম দিক) */
