@@ -44,14 +44,14 @@
 /* লোগো (বাম দিক) */
 .logo-area { display: flex; justify-content: flex-start; }
 
-.site-logo { height: 48px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+.site-logo { height: 158px; width: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
 
 /* ব্র্যান্ড টাইটেল (ঠিক মাঝখানে) */
 .brand-area { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
 
-.brand-title { font-size: 2.4rem; font-weight: 800; color: var(--primary-color); text-shadow: 1px 2px 3px rgba(0,0,0,0.6); line-height: 1.2; margin: 0; }
+.brand-title { font-size: 3.4rem; font-weight: 800; color: var(--primary-color); text-shadow: 1px 2px 3px rgba(0,0,0,0.6); line-height: 1.2; margin: 0; }
 
-.brand-sub { font-size: 1.5rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; margin: 0; }
+.brand-sub { font-size: 2.5rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; margin: 0; }
 
 /* বাটন ও মেনু (ডান দিক) */
 .nav-actions { display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
@@ -218,7 +218,12 @@
     }
     .login-btn:hover { background: #0ea5e9; }
     .error-msg { color: #ef4444; font-size: 13px; margin-top: 10px; display: none; }
- @media (max-width: 768px) {header {min-height: 80px; }.header-container { min-height: 80px;grid-template-columns: auto 1fr auto; gap: 1px; padding: 1px 15px; } .brand-title { font-size: 1.9rem; } .brand-sub { font-size: 0.75rem; } .quick-link span { display: none; } .quick-link { padding: 8px  @media (max-width: 768px) { .header-container { grid-template-columns: auto 1fr auto; gap: 1px; padding: 1px 15px; } .brand-title { font-size: 1.9rem; } .brand-sub { font-size: 0.75rem; } .quick-link span { display: none; } .quick-link { padding: 8px 16px; } }
+ @media (max-width: 768px) {header {min-height: 80px; }
+                            .site-logo { height: 48px;}
+                            
+                            .header-container { min-height: 80px;grid-template-columns: auto 1fr auto; gap: 1px; padding: 1px 15px; } 
+                            .brand-title { font-size: 1.9rem; }
+                            .brand-sub { font-size: 0.75rem; } .quick-link span { display: none; } .quick-link { padding: 8px  @media (max-width: 768px) { .header-container { grid-template-columns: auto 1fr auto; gap: 1px; padding: 1px 15px; } .brand-title { font-size: 1.9rem; } .brand-sub { font-size: 0.75rem; } .quick-link span { display: none; } .quick-link { padding: 8px 16px; } }
     
   </style>
 </head>
